@@ -37,7 +37,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install numpy protobuf==3.11.3
         sudo apt-get install protobuf-compiler libprotoc-dev
-    - name: Build manylinux2010_aarch64
+    - name: Build manylinux2014_aarch64
       uses: docker://quay.io/pypa/manylinux2010_aarch64
       with:
         entrypoint: bash
