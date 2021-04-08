@@ -45,6 +45,7 @@ jobs:
           ${{ env.img }} \
           bash -exc '\
           yum install -y sudo && \
+          sudo chmod +x .github/workflows/manylinux/entrypoint.sh && \
           sudo .github/workflows/manylinux/entrypoint.sh ${{ env.py }} manylinux2014_aarch64 ${{ github.event_name }}'
 
     - name: Test wheel with Python ${{ matrix.python-version }}
