@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
-          ${{ env.img }} yum install protobuf-compiler protobuf-devel
+          ${{ env.img }} yum install -y protobuf-compiler protobuf-devel
           
     - name: Build manylinux2014_aarch64
       run: |
