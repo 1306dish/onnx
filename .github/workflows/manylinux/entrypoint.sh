@@ -37,8 +37,8 @@ cd $ONNX_PATH
 #declare -A python_map=( ["3.6"]="cp36-cp36m" ["3.7"]="cp37-cp37m" ["3.8"]="cp38-cp38" ["3.9"]="cp39-cp39")
 #declare -A python_include=( ["3.6"]="3.6m" ["3.7"]="3.7m" ["3.8"]="3.8" ["3.9"]="3.9")
 #PY_VER=${python_map[$PY_VERSION]}
-PIP_COMMAND="/opt/python/$PY_VERSION/bin/pip install --no-cache-dir"
-PYTHON_COMAND="/opt/python/"$PY_VERSION"/bin/python"
+PIP_COMMAND="$PY_VERSION/bin/pip install --no-cache-dir"
+PYTHON_COMAND="$PY_VERSION/bin/python"
 
 # set ONNX build environments
 export ONNX_ML=1
