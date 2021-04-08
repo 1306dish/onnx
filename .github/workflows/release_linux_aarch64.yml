@@ -53,7 +53,7 @@ jobs:
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
           bash -exc '${{ env.py }} -m pip install dist/*-manylinux2014_aarch64.whl && \
-          python -m pip install pytest==5.4.3 nbval ipython==7.16.1 && \
+          ${{ env.py }} -m pip install pytest==5.4.3 nbval ipython==7.16.1 && \
           pytest'
     #- name: Test backend test data
      # run: |
