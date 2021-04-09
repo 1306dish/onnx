@@ -18,19 +18,21 @@ fi
 # Build protobuf
 export NUM_PROCESSOR=`grep -c ^processor /proc/cpuinfo`
 
-ONNX_PATH=$(pwd)
-cd ..
-git clone https://github.com/protocolbuffers/protobuf.git
-cd protobuf
-git checkout 3.11.x
-git submodule update --init --recursive
-mkdir build_source && cd build_source
+#ONNX_PATH=$(pwd)
+#cd ..
+#git clone https://github.com/protocolbuffers/protobuf.git
+#cd protobuf
+#git checkout 3.11.x
+#git submodule update --init --recursive
+#mkdir build_source && cd build_source
 
-cmake ../cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc -DCMAKE_POSITION_INDEPENDENT_CODE=ON -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
-make -j${NUM_PROCESSOR}
-make install
-ldconfig
-cd $ONNX_PATH
+#cmake ../cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc -DCMAKE_POSITION_INDEPENDENT_CODE=ON -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release
+#make -j${NUM_PROCESSOR}
+#make install
+#ldconfig
+#cd $ONNX_PATH
+
+yum install -y protobuf
 
 # Compile wheels
 # Need to be updated if there is a new Python Version
