@@ -52,9 +52,13 @@ jobs:
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install dist/*-manylinux2014_aarch64.whl && \
-          ${{ env.py }} -m pip install pytest==5.4.3 nbval ipython==7.16.1 && \
-          pytest'
+          bash -exc 'bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          source .env/bin/activate && \
+          python -m pip install --upgrade pip && \
+          pip install dist/*-manylinux2014_aarch64.whl && \
+          pip install pytest nbval ipython==7.16.1 && \
+          pytest && \
+          deactivate'
     #- name: Test backend test data
      # run: |
       #  # onnx.checker all existing backend data
