@@ -32,7 +32,7 @@ export NUM_PROCESSOR=`grep -c ^processor /proc/cpuinfo`
 #ldconfig
 #cd $ONNX_PATH
 
-yum install -y protobuf
+yum install -y protobuf-compiler protobuf
 
 # Compile wheels
 # Need to be updated if there is a new Python Version
