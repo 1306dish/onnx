@@ -8,7 +8,7 @@ PLAT=$2
 GITHUB_EVENT_NAME=$3
 BUILD_REQUIREMENTS='numpy==1.16.6 protobuf==3.11.3'
 if [ `uname -m` == 'aarch64' ]; then
- SYSTEM_PACKAGES='cmake'
+ SYSTEM_PACKAGES='cmake3'
 else
  SYSTEM_PACKAGES='cmake3'
 fi
