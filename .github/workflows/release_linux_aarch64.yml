@@ -8,9 +8,11 @@ on:
     branches: [master, rel-*]
   pull_request:
     branches: [rel-*]
+  workflow_dispatch:
 
 jobs:
   build:
+    #if: github.event_name != 'pull_request' || startsWith( github.base_ref, 'rel-') || contains( github.event.pull_request.labels.*.name, 'run release CIs')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -30,14 +32,13 @@ jobs:
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-    - name: Install python dependencies
-      run: |
-        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
-          ${{ env.img }} ${{ env.py }} -m pip install -U numpy protobuf==3.11.3
     - name: Install dependencies
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
-          ${{ env.img }} yum install -y protobuf-compiler protobuf-devel
+          ${{ env.img }} \
+          bash -exc '\
+          ${{ env.py }} -m pip install -U numpy protobuf==3.11.3 && \
+          ${{ env.img }} yum install -y protobuf-compiler protobuf-devel'        
           
     - name: Build manylinux2014_aarch64
       run: |
@@ -55,10 +56,11 @@ jobs:
           bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
           source .env/bin/activate && \
           python -m pip install --upgrade pip && \
-          pip install dist/*-manylinux2014_aarch64.whl && \
+          pip install dist/*manylinux2014_aarch64.whl && \
           pip install pytest nbval ipython==7.16.1 && \
           pytest && \
           deactivate'
+          
     - name: Test backend test data
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
@@ -71,6 +73,7 @@ jobs:
           python onnx/backend/test/cmd_tools.py generate-data && \
           python workflow_scripts/test_generated_backend.py && \
           deactivate'
+          
     - uses: actions/upload-artifact@v1
       with:
         name: wheels
@@ -81,3 +84,24 @@ jobs:
       run: |
         python -m pip install -q twine
         twine upload --verbose dist/*.whl --repository-url https://test.pypi.org/legacy/ -u ${{ secrets.TESTPYPI_USERNAME }} -p ${{ secrets.TESTPYPI_PASSWORD }}
+        
+    - name: Verify ONNX with the latest numpy
+      if: ${{ always() }}
+      run: |
+        python -m pip uninstall -y numpy onnx && python -m pip install numpy
+        python -m pip install dist/*manylinux2014_aarch64.whl
+        pytest
+        
+    - name: Verify ONNX with the latest protobuf
+      if: ${{ always() }}
+      run: |
+        python -m pip uninstall -y protobuf onnx && python -m pip install protobuf
+        python -m pip install dist/*manylinux2014_aarch64.whl
+        pytest      
+        
+    - name: Verify ONNX with ort-nightly
+      if: ${{ always() }}
+      run: |
+        python -m pip install flatbuffers
+        python -m pip install -i https://test.pypi.org/simple/ ort-nightly
+        python onnx/test/test_with_ort.py
