@@ -38,7 +38,7 @@ jobs:
           ${{ env.img }} \
           bash -exc '\
           ${{ env.py }} -m pip install -U numpy protobuf==3.11.3 && \
-          ${{ env.py }} yum install -y protobuf-compiler protobuf-devel'        
+          yum install -y protobuf-compiler protobuf-devel'        
           
     - name: Build manylinux2014_aarch64
       run: |
