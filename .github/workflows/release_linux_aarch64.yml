@@ -36,24 +36,28 @@ jobs:
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '\
+          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          source .env/bin/activate && \
           ${{ env.py }} -m pip install -U numpy protobuf==3.11.3 && \
-          yum install -y protobuf-compiler protobuf-devel'        
+          yum install -y protobuf-compiler protobuf-devel
+          deactivate'        
           
     - name: Build manylinux2014_aarch64
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
           bash -exc '\
+          source .env/bin/activate && \
           yum install -y sudo && \
           sudo chmod +x .github/workflows/manylinux/entrypoint.sh && \
-          sudo .github/workflows/manylinux/entrypoint.sh ${{ env.py }} manylinux2014_aarch64 ${{ github.event_name }}'
+          sudo .github/workflows/manylinux/entrypoint.sh ${{ env.py }} manylinux2014_aarch64 ${{ github.event_name }}
+          deactivate'
 
     - name: Test wheel with Python ${{ matrix.python-version }}
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          bash -exc '\
           source .env/bin/activate && \
           python -m pip install --upgrade pip && \
           pip install dist/*manylinux2014_aarch64.whl && \
@@ -65,7 +69,7 @@ jobs:
       run: |
         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          bash -exc '\
           source .env/bin/activate && \
           # onnx.checker all existing backend data
           python workflow_scripts/test_generated_backend.py && \
@@ -90,7 +94,7 @@ jobs:
       run: |
          docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          bash -exc '\
           source .env/bin/activate && \
           python -m pip uninstall -y numpy onnx && python -m pip install numpy && \
           python -m pip install dist/*manylinux2014_aarch64.whl && \
@@ -103,7 +107,7 @@ jobs:
       run: |
          docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          bash -exc '\
           source .env/bin/activate && \
           python -m pip uninstall -y protobuf onnx && python -m pip install protobuf && \
           python -m pip install dist/*manylinux2014_aarch64.whl && \
@@ -116,7 +120,7 @@ jobs:
       run: |
          docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
           ${{ env.img }} \
-          bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+          bash -exc '\
           source .env/bin/activate && \
           python -m pip install flatbuffers && \
           python -m pip install -i https://test.pypi.org/simple/ ort-nightly && \
