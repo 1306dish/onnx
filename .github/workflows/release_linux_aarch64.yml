@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [cp37-cp37m, cp38-cp38, cp39-cp39]
+        python-version: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
         arch: ['aarch64']
     env:
       py: /opt/python/${{ matrix.python-version }}/bin/python
@@ -109,7 +109,7 @@ jobs:
           ${{ env.img }} \
           bash -exc '\
           source .env/bin/activate && \
-          python -m pip uninstall -y protobuf onnx && python -m pip install protobuf && \
+          python -m pip uninstall -y protobuf onnx && \
           python -m pip install dist/*manylinux2014_aarch64.whl && \
           python -m pip install pytest && \
           pytest && \
